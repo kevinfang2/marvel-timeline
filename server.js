@@ -20,10 +20,13 @@ var image = ""
 
 
 app.get('/', function(req, res){
-
+  res.render("index.html")
 })
+app.get('/timeline', function(req,res){
+  res.render("timeline.html")
+});
 
-app.get('/timeline', function(req, res){
+app.get('/getData', function(req, res){
   var character = req.query.character;
   var timeStamp = Math.floor(Date.now() / 1000);
   var hash = getHash(timeStamp)
@@ -53,9 +56,9 @@ app.get('/timeline', function(req, res){
     var titles = []
     var creator = []
     var descriptions = []
+
     for (var x=0; x<sorted_events.length; x++){
       var event2 = sorted_events[x]
-      console.log(event2)
       if(event2.creators.items[0] == null){
         creator.push("unknown")
       }
@@ -71,20 +74,17 @@ app.get('/timeline', function(req, res){
         .then(function(response) {
           var same = response.getBody();
           var data = same.data.results
-          var description = data.description
-          if(description == ''){
-            descriptions.push("no description provided")
-          }
-          else{
-            descriptions.push(description)
-          }
+
+          var description = data[0].description
+          descriptions.push(description)
         }
       );
     }
-
-    data = { descriptions: descriptions, titles:titles, creators:creator, years:year, images:image }
-    res.render('timeline.html', data);
-
+    console.log(descriptions)
+    setTimeout(function(){
+      data = {descriptions: descriptions, titles:titles, creators:creator, years:years, images:image }
+      res.json(data);
+    }, 500)
   }, 5000)
 })
 
