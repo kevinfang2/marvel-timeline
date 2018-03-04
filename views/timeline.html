@@ -9,7 +9,7 @@
 </head>
 <body>
 
-	<h1 class = "overlay">Marvelary</h1>
+	<h1 class = "overlay">Marvelous</h1>
 
 	<!-- <form action = "http://localhost:8000/getData"> -->
 	<!-- <input type = "text" name = "char" placeholder = "character"> -->
@@ -37,6 +37,17 @@
 			</div>
 		</div>
 	</div>
+
+	<style>
+	.meme > p {
+		
+    color: white;
+    margin-left: -20px;
+    margin-right: 25px;
+    margin-top:  30px;
+
+	}
+	</style>
 <script>
 
 let input = document.getElementsByTagName("input")[0]
@@ -59,6 +70,14 @@ input.addEventListener('keypress', function(e) {
 			let year = JSON_output.years[index]
 			appendEvent(creator, desc, title, year);
 		}
+
+		// add overview
+		let overview = httpGet('http://localhost:8000/background?character=' + input.value)
+		document.getElementsByClassName('container')[0].innerHTML += '<div class = "row flex meme">\
+									<p style = "color: white;\
+    margin: 35px;">' + overview + '</p>\
+									<img src = "' + JSON_output.images + '" style = "width: 40%; margin: 14px; height: 40%;">\
+								</div>'
 	}
 })
 

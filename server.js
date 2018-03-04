@@ -33,17 +33,19 @@ app.get('/background', function(req, res) {
   var char_id = req.query.character.replace('%20, _')
   request('https://en.wikipedia.org/wiki/' + char_id, function (e, r, html) {
       var $ = cheerio.load(html);
-      var char_count = 0
+      // var char_count = 0
+      var responseString = ''
       $('p').each(function (i, element) {
           var node = $(this);
           var text = node.text();
-          char_count = char_count + text.length
+          // char_count = char_count + text.length
+          responseString += text + '/n'
 
           // don't want longer than 1500 that's not really a brief summary then
-          if (char_count <= 1500) {
+          if (responseString.length >= 1500) {
             res.write('<p>' + text + '</p>');
-          }
-          else {
+          // }
+          // else {
             res.end();
           }
       });
