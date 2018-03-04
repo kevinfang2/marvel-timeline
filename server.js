@@ -17,25 +17,48 @@ app.get('/timeline', function(req, res){
   var timeStamp = Math.floor(Date.now() / 1000);
   var hash = getHash(timeStamp)
   var url = "http://gateway.marvel.com/v1/public/characters?name=" + character + "&ts=" + timeStamp + "&apikey=" + publickey + "&hash=" + hash
-  httpGet(url)
+  httpGet(url, same)
 })
-
 
 app.listen(8000, () => console.log('port 8000'))
 
-function httpGet(url) {
+function httpGet(url, callback) {
+  requestify.get(url)
+    .then(function(response) {
+      var same = response.getBody();
+      var data = same.data
+      var results = data.results
+      var results = results[0]
+
+      var id = results.id
+      var description = results.description
+      var image = results.thumbnail.path + "." + results.thumbnail.extension
+      console.log(image)
+      callback(id,description, image)
+    });
+}
+
+function same(id,description,image_url) {
+  var timeStamp2 = Math.floor(Date.now() / 1000);
+  var hash2 = getHash(timeStamp2)
+  var url2 = "https://gateway.marvel.com/v1/public/characters/" + id + "/stories?apikey=" + publickey  + "&ts=" + timeStamp2 + "&hash=" + hash2
+  console.log(url2)
+};
+
+function httpGet2(url, callback) {
   console.log(url)
   requestify.get(url)
     .then(function(response) {
       var same = response.getBody();
       console.log(same)
-      var obj = JSON.parse(same)
-      var data = obj.data
-      var results = data.results
-
+      var data = same.data
+      console.log(data)
+      var stuffed_data = [id,description,image]
+      callback(stuffed_data)
     }
   );
 }
+
 
 function getHash(timestamp){
   var same = crypto.createHash('md5').update(timestamp + privatekey + publickey).digest("hex");
