@@ -5,9 +5,16 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <link type = "text/css" href="css/main.css" rel="stylesheet">
 
-<title> lol </title>
+<title>Marvel Hero Summary</title>
 </head>
 <body>
+
+	<h1 class = "overlay">Marvelary</h1>
+
+	<!-- <form action = "http://localhost:8000/getData"> -->
+	<input type = "text" name = "char" placeholder = "character">
+<!-- 		<input type = "submit">
+	</form> -->
 
     <div class="container">
     		<div class="row">
@@ -15,7 +22,7 @@
 					<div class="page-header">
 					  <!-- <h1>Horizontal timeline</h1> -->
 					</div>
-					<div style="display:inline-block;width:100%;overflow-y:auto;">
+					<div style="display:inline-block;width:100%;overflow-y:auto;background: gray;">
 
 					<!-- timeline container -->
 					<ul class="timeline timeline-horizontal" id = 'timeline-container'>
@@ -26,6 +33,27 @@
 		</div>
 	</div>
 <script>
+
+let input = document.getElementsByTagName("input")[0]
+input.addEventListener('keypress', function(e) {
+	console.log(e)
+	if (e.key == "Enter") {
+		console.log("right")
+		// const raw_output = httpGet('http://localhost:8000/getData?character=spider-man')
+		const raw_output = httpGet('http://localhost:8000/getData?character=' + input.value)
+		const JSON_output = JSON.parse(raw_output)
+		console.log(JSON_output)
+
+		for (index in JSON_output.creators) {
+			let creator = JSON_output.creators[index]
+			let desc = JSON_output.descriptions[index]
+			let title = JSON_output.titles[index]
+			let year = JSON_output.years[index]
+			appendEvent(creator, desc, title, year);
+		}
+	}
+})
+
 function httpGet(theUrl) {
   console.log(theUrl)
   var xmlHttp = new XMLHttpRequest();
@@ -33,16 +61,18 @@ function httpGet(theUrl) {
   xmlHttp.send( null );
   return xmlHttp.responseText;
 }
-const raw_output = httpGet('http://localhost:8000/getData?character=spider-man')
-const JSON_output = JSON.parse(raw_output)
+// // const raw_output = httpGet('http://localhost:8000/getData?character=spider-man')
+// const raw_output = httpGet('http://localhost:8000/getData?character=' + char)
+// const JSON_output = JSON.parse(raw_output)
+// console.log(JSON_output)
 
-for (index in JSON_output.creators) {
-	let creator = JSON_output.creators[index]
-	let desc = JSON_output.descriptions[index]
-	let title = JSON_output.titles[index]
-	let year = JSON_output.years[index]
-	appendEvent(creator, desc, title, year);
-}
+// for (index in JSON_output.creators) {
+// 	let creator = JSON_output.creators[index]
+// 	let desc = JSON_output.descriptions[index]
+// 	let title = JSON_output.titles[index]
+// 	let year = JSON_output.years[index]
+// 	appendEvent(creator, desc, title, year);
+// }
 
 function appendEvent(creator, desc, title, year) {
 	var container = document.getElementById('timeline-container')
