@@ -7,7 +7,7 @@ const util = require('util')
 var engines = require('consolidate');
 
 app.use(express.static(__dirname));
-app.set('view engine', 'html');
+app.set('view engine', 'hbs');
 app.set('views', __dirname + "/views/");
 app.engine('html', engines.mustache);
 
@@ -39,6 +39,7 @@ app.get('/getData', function(req, res){
       year = years[x]
       for (y=0;y<years.length; y++){
         var event1 = events[y]
+        console.log(event1)
         var date_modified = event1.modified
         var same = date_modified.split('')
         same.splice(4,20)
@@ -85,7 +86,7 @@ app.get('/getData', function(req, res){
       data = {descriptions: descriptions, titles:titles, creators:creator, years:years, images:image }
       res.json(data);
     }, 500)
-  }, 5000)
+  }, 10000)
 })
 
 app.listen(8000, () => console.log('port 8000'))
