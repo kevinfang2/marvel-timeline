@@ -3,6 +3,8 @@ const app = express()
 var crypto = require('crypto');
 var requestify = require('requestify');
 const util = require('util')
+const request = require('request')
+const cheerio = require('cheerio')
 
 var engines = require('consolidate');
 
@@ -25,6 +27,28 @@ app.get('/', function(req, res){
 app.get('/timeline', function(req,res){
   res.render("timeline.html")
 });
+
+// http://localhost:8000/background?character=iron%20man
+app.get('/background', function(req, res) {
+  var char_id = req.query.character.replace('%20, _')
+  request('https://en.wikipedia.org/wiki/' + char_id, function (e, r, html) {
+      var $ = cheerio.load(html);
+      var char_count = 0
+      $('p').each(function (i, element) {
+          var node = $(this);
+          var text = node.text();
+          char_count = char_count + text.length
+
+          // don't want longer than 1500 that's not really a brief summary then
+          if (char_count <= 1500) {
+            res.write('<p>' + text + '</p>');
+          }
+          else {
+            res.end();
+          }
+      });
+  });
+})
 
 app.get('/getData', function(req, res){
   var character = req.query.character;
