@@ -4,17 +4,20 @@ var crypto = require('crypto');
 var requestify = require('requestify');
 const util = require('util')
 
+var engines = require('consolidate');
+
+app.use(express.static(__dirname));
+app.set('view engine', 'html');
+app.set('views', __dirname + "/views/");
+app.engine('html', engines.mustache);
+
 let publickey = "46db6904022f7c4f07592219dc6f78cf"
 let privatekey = "fc9160812e8b88d79c5d9f786057cf09c764c494"
 
 var events = []
 var years = []
+var image = ""
 
-app.use(express.static('public'));
-
-app.route('/*').get(function(req, res) {
-  res.sendfile('timeline.html');
-});
 
 app.get('/', function(req, res){
 
@@ -33,14 +36,12 @@ app.get('/timeline', function(req, res){
       year = years[x]
       for (y=0;y<years.length; y++){
         var event1 = events[y]
-        // console.log(event1)
         var date_modified = event1.modified
         var same = date_modified.split('')
         same.splice(4,20)
         real_date = same.join('');
 
         if(real_date == year){
-          console.log(year, real_date)
           sorted_events.push(event1)
           var index = events.indexOf(event1);
 
@@ -55,7 +56,7 @@ app.get('/timeline', function(req, res){
     for (var x=0; x<sorted_events.length; x++){
       var event2 = sorted_events[x]
       console.log(event2)
-      if(event2.creator == null){
+      if(event2.creators.items[0] == null){
         creator.push("unknown")
       }
       else{
@@ -81,8 +82,9 @@ app.get('/timeline', function(req, res){
       );
     }
 
-    descriptions, titles, creator, year, image
-    res.json({ descriptions: descriptions, titles:titles, creators:creator, years:year, images:image });
+    data = { descriptions: descriptions, titles:titles, creators:creator, years:year, images:image }
+    res.render('timeline.html', data);
+
   }, 5000)
 })
 
@@ -98,13 +100,12 @@ function httpGet(url, callback) {
 
       var id = results.id
       var description = results.description
-      var image = results.thumbnail.path + "." + results.thumbnail.extension
-      console.log(image)
-      callback(id,description, image)
+      image = results.thumbnail.path + "." + results.thumbnail.extension
+      callback(id,description)
     });
 }
 
-function same(id,description,image_url) {
+function same(id,description) {
   var timeStamp2 = Math.floor(Date.now() / 1000);
   var hash2 = getHash(timeStamp2)
   var url2 = "https://gateway.marvel.com/v1/public/characters/" + id + "/stories?apikey=" + publickey  + "&ts=" + timeStamp2 + "&hash=" + hash2
