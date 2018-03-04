@@ -39,6 +39,9 @@ input.addEventListener('keypress', function(e) {
 	console.log(e)
 	if (e.key == "Enter") {
 		console.log("right")
+		var container = document.getElementById('timeline-container')
+
+		container.innerHTML = "<ul class='timeline timeline-horizontal' id = 'timeline-container'></ul>"
 		// const raw_output = httpGet('http://localhost:8000/getData?character=spider-man')
 		const raw_output = httpGet('http://localhost:8000/getData?character=' + input.value)
 		const JSON_output = JSON.parse(raw_output)

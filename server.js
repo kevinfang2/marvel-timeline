@@ -39,6 +39,9 @@ app.get('/getData', function(req, res){
       year = years[x]
       for (y=0;y<years.length; y++){
         var event1 = events[y]
+        if(event1 == null){
+          break
+        }
         console.log(event1)
         var date_modified = event1.modified
         var same = date_modified.split('')
@@ -86,7 +89,7 @@ app.get('/getData', function(req, res){
       data = {descriptions: descriptions, titles:titles, creators:creator, years:years, images:image }
       res.json(data);
     }, 500)
-  }, 10000)
+  }, 8000)
 })
 
 app.listen(8000, () => console.log('port 8000'))
